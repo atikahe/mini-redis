@@ -25,14 +25,12 @@ func main() {
 	// Read multiple request
 	buf := make([]byte, 1024)
 	for {
-		n, err := conn.Read(buf)
+		_, err = conn.Read(buf)
 		if err != nil {
 			fmt.Println("error reading from client")
 			os.Exit(1)
 		}
 
-		if string(buf[:n]) == "PING\n" {
-			conn.Write([]byte("+PONG\r\n"))
-		}
+		conn.Write([]byte("+PONG\r\n"))
 	}
 }
