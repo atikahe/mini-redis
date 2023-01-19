@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
 	fmt.Println("Logs from your program will appear here!")
 
 	// Bind TCP server to port 6379
@@ -23,12 +22,17 @@ func main() {
 	}
 	defer conn.Close()
 
+	// Read multiple request
 	buf := make([]byte, 1024)
+	for {
+		n, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("error reading from client")
+			os.Exit(1)
+		}
 
-	if _, err := conn.Read(buf); err != nil {
-		fmt.Println("error reading from client", err.Error())
-		os.Exit(1)
+		if string(buf[:n]) == "PING\n" {
+			conn.Write([]byte("+PONG\r\n"))
+		}
 	}
-
-	conn.Write([]byte("+PONG\r\n"))
 }
