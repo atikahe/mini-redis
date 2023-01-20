@@ -37,6 +37,7 @@ func main() {
 			fmt.Println("error accepting connection", err)
 			continue
 		}
+		defer conn.Close()
 
 		go handleRequest(conn)
 	}
