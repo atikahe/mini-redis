@@ -7,6 +7,7 @@ import (
 )
 
 func handleRequest(conn net.Conn) {
+	defer conn.Close()
 	buf := make([]byte, 1024)
 
 	for {
@@ -41,45 +42,4 @@ func main() {
 
 		go handleRequest(conn)
 	}
-
-	// Create connection channel
-	// events := make(chan net.Conn)
-
-	// Receive connection
-	// go func() {
-	// 	for {
-	// 		conn, err := l.Accept()
-	// 		if err != nil {
-	// 			fmt.Println("error accepting connection", err)
-	// 			continue
-	// 		}
-
-	// 		// Register connection to events
-	// 		events <- conn
-	// 	}
-	// }()
-
-	// // Create new thread for new connection
-	// for {
-
-	// }
-
-	// conn, err := l.Accept()
-	// if err != nil {
-	// 	fmt.Println("Error accepting connection: ", err.Error())
-	// 	os.Exit(1)
-	// }
-	// defer conn.Close()
-
-	// // Read multiple request
-	// buf := make([]byte, 1024)
-	// for {
-	// 	_, err = conn.Read(buf)
-	// 	if err != nil {
-	// 		fmt.Println("error reading from client")
-	// 		os.Exit(1)
-	// 	}
-
-	// 	conn.Write([]byte("+PONG\r\n"))
-	// }
 }
