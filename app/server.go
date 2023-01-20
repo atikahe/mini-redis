@@ -30,6 +30,7 @@ func main() {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
+	defer l.Close()
 
 	for {
 		conn, err := l.Accept()
@@ -37,7 +38,6 @@ func main() {
 			fmt.Println("error accepting connection", err)
 			continue
 		}
-		defer conn.Close()
 
 		go handleRequest(conn)
 	}
