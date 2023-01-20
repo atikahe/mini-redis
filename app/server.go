@@ -6,6 +6,21 @@ import (
 	"os"
 )
 
+func handleRequest(conn net.Conn) {
+	buf := make([]byte, 1024)
+
+	for {
+		_, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("error reading from client")
+			os.Exit(1)
+		}
+
+		conn.Write([]byte("+PONG\r\n"))
+	}
+
+}
+
 func main() {
 	fmt.Println("Logs from your program will appear here!")
 
@@ -15,22 +30,55 @@ func main() {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-	defer conn.Close()
 
-	// Read multiple request
-	buf := make([]byte, 1024)
 	for {
-		_, err = conn.Read(buf)
+		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("error reading from client")
-			os.Exit(1)
+			fmt.Println("error accepting connection", err)
+			continue
 		}
 
-		conn.Write([]byte("+PONG\r\n"))
+		go handleRequest(conn)
 	}
+
+	// Create connection channel
+	// events := make(chan net.Conn)
+
+	// Receive connection
+	// go func() {
+	// 	for {
+	// 		conn, err := l.Accept()
+	// 		if err != nil {
+	// 			fmt.Println("error accepting connection", err)
+	// 			continue
+	// 		}
+
+	// 		// Register connection to events
+	// 		events <- conn
+	// 	}
+	// }()
+
+	// // Create new thread for new connection
+	// for {
+
+	// }
+
+	// conn, err := l.Accept()
+	// if err != nil {
+	// 	fmt.Println("Error accepting connection: ", err.Error())
+	// 	os.Exit(1)
+	// }
+	// defer conn.Close()
+
+	// // Read multiple request
+	// buf := make([]byte, 1024)
+	// for {
+	// 	_, err = conn.Read(buf)
+	// 	if err != nil {
+	// 		fmt.Println("error reading from client")
+	// 		os.Exit(1)
+	// 	}
+
+	// 	conn.Write([]byte("+PONG\r\n"))
+	// }
 }
