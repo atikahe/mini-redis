@@ -1,23 +1,49 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
+
+	"github.com/atikahe/mini-redis/pkg/resp"
 )
 
-func handleRequest(conn net.Conn) {
+func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	buf := make([]byte, 1024)
+	// buf := make([]byte, 1024)
 
 	for {
-		_, err := conn.Read(buf)
+		// _, err := conn.Read(buf)
+		// if err != nil {
+		// 	fmt.Println("error decoding from client")
+		// 	os.Exit(1)
+		// }
+
+		input, err := resp.Decode(bufio.NewReader(conn))
 		if err != nil {
-			fmt.Println("error reading from client")
+			fmt.Println("error decoding from client")
 			os.Exit(1)
 		}
 
+		fmt.Println("INPUT", input)
+
 		conn.Write([]byte("+PONG\r\n"))
+
+		// command := input.Array()[0].String()
+		// args := input.Array()[1:]
+
+		// switch command {
+		// case "ping":
+		// 	fmt.Println("+PONG\r")
+		// 	conn.Write([]byte("+PONG\r\n"))
+		// case "echo":
+		// 	// Handle echo
+		// 	fmt.Println("args", args)
+		// default:
+		// 	conn.Write([]byte("-ERR unknown command '" + command + "'\r\n"))
+		// }
+
 	}
 
 }
@@ -35,11 +61,12 @@ func main() {
 
 	for {
 		conn, err := l.Accept()
+		fmt.Println("CONNECTION ACCEPTED")
 		if err != nil {
 			fmt.Println("error accepting connection", err)
 			continue
 		}
 
-		go handleRequest(conn)
+		go handleConnection(conn)
 	}
 }
